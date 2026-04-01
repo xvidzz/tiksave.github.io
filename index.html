@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TikTok Downloader – Bez Watermarku</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500&display=swap');
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #0a0a0a; color: #f0f0f0; min-height: 100vh; }
+
+  .ad-banner { background: #111; border-bottom: 1px solid #222; text-align: center; padding: 8px; font-size: 12px; color: #555; letter-spacing: 1px; }
+  .ad-banner span { background: #1a1a1a; border: 1px dashed #333; padding: 2px 12px; border-radius: 4px; }
+
+  header { display: flex; justify-content: space-between; align-items: center; padding: 16px 32px; border-bottom: 1px solid #1e1e1e; }
+  .logo { font-family: 'Syne', sans-serif; font-size: 20px; font-weight: 800; color: #fff; }
+  .logo span { color: #fe2c55; }
+  nav a { color: #666; text-decoration: none; font-size: 13px; margin-left: 20px; transition: color 0.2s; }
+  nav a:hover { color: #fff; }
+
+  .hero { text-align: center; padding: 64px 24px 48px; }
+  .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.1; margin-bottom: 16px; }
+  .hero h1 em { color: #fe2c55; font-style: normal; }
+  .hero p { color: #888; font-size: 16px; max-width: 480px; margin: 0 auto 40px; line-height: 1.6; }
+
+  .input-wrap { display: flex; gap: 0; max-width: 600px; margin: 0 auto; border: 1.5px solid #2a2a2a; border-radius: 12px; overflow: hidden; background: #111; transition: border-color 0.2s; }
+  .input-wrap:focus-within { border-color: #fe2c55; }
+  .input-wrap input { flex: 1; background: transparent; border: none; outline: none; padding: 16px 20px; font-size: 15px; color: #f0f0f0; font-family: 'DM Sans', sans-serif; }
+  .input-wrap input::placeholder { color: #444; }
+  .input-wrap button { background: #fe2c55; color: #fff; border: none; padding: 16px 28px; font-size: 15px; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: background 0.2s; white-space: nowrap; }
+  .input-wrap button:hover { background: #e0203d; }
+
+  .formats { display: flex; justify-content: center; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
+  .fmt-badge { background: #161616; border: 1px solid #2a2a2a; color: #888; padding: 4px 14px; border-radius: 999px; font-size: 12px; cursor: pointer; transition: all 0.2s; }
+  .fmt-badge.active, .fmt-badge:hover { border-color: #fe2c55; color: #fe2c55; background: #1a0509; }
+
+  .ad-box { max-width: 728px; margin: 0 auto 40px; background: #111; border: 1px dashed #222; border-radius: 8px; padding: 24px; text-align: center; color: #444; font-size: 12px; letter-spacing: 1px; min-height: 90px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; }
+  .ad-box strong { color: #333; font-size: 11px; }
+
+  .result { max-width: 600px; margin: 0 auto 48px; display: none; }
+  .result.show { display: block; }
+  .result-card { background: #111; border: 1px solid #2a2a2a; border-radius: 14px; overflow: hidden; }
+  .result-card .thumb { width: 100%; height: 200px; background: linear-gradient(135deg, #1a0509, #0d0d1a); display: flex; align-items: center; justify-content: center; }
+  .thumb-icon { width: 60px; height: 60px; background: #fe2c55; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+  .thumb-icon svg { width: 24px; height: 24px; fill: white; }
+  .result-info { padding: 20px; }
+  .result-info h3 { font-size: 15px; font-weight: 500; margin-bottom: 8px; }
+  .result-info p { font-size: 13px; color: #666; margin-bottom: 16px; }
+  .dl-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+  .dl-btn { flex: 1; padding: 12px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; transition: opacity 0.2s; min-width: 120px; }
+  .dl-btn.primary { background: #fe2c55; color: white; }
+  .dl-btn.secondary { background: #1e1e1e; color: #ccc; border: 1px solid #2a2a2a; }
+  .dl-btn:hover { opacity: 0.85; }
+
+  .steps { max-width: 800px; margin: 0 auto 64px; padding: 0 24px; }
+  .steps h2 { font-family: 'Syne', sans-serif; font-size: 28px; text-align: center; margin-bottom: 40px; }
+  .steps-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+  .step-card { background: #111; border: 1px solid #1e1e1e; border-radius: 12px; padding: 24px; }
+  .step-num { width: 36px; height: 36px; border-radius: 50%; background: #1a0509; border: 1.5px solid #fe2c55; color: #fe2c55; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 800; font-size: 16px; margin-bottom: 16px; }
+  .step-card h3 { font-size: 15px; font-weight: 500; margin-bottom: 8px; }
+  .step-card p { font-size: 13px; color: #666; line-height: 1.5; }
+
+  .ad-sidebar-wrap { max-width: 960px; margin: 0 auto 48px; padding: 0 24px; display: grid; grid-template-columns: 1fr 160px; gap: 24px; align-items: start; }
+  .faq { }
+  .faq h2 { font-family: 'Syne', sans-serif; font-size: 24px; margin-bottom: 24px; }
+  .faq-item { border-bottom: 1px solid #1e1e1e; padding: 16px 0; cursor: pointer; }
+  .faq-item summary { font-size: 14px; font-weight: 500; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+  .faq-item summary::after { content: '+'; color: #fe2c55; font-size: 18px; }
+  .faq-item[open] summary::after { content: '−'; }
+  .faq-item p { font-size: 13px; color: #666; margin-top: 10px; line-height: 1.6; }
+  .ad-side { background: #111; border: 1px dashed #222; border-radius: 8px; padding: 16px; text-align: center; color: #444; font-size: 11px; letter-spacing: 1px; min-height: 600px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; }
+
+  footer { border-top: 1px solid #1a1a1a; padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: gap; gap: 12px; }
+  footer p { font-size: 12px; color: #444; }
+  footer nav a { color: #444; text-decoration: none; font-size: 12px; margin-left: 16px; }
+  footer nav a:hover { color: #888; }
+
+  .error-msg { max-width: 600px; margin: 12px auto 0; text-align: center; font-size: 13px; color: #ff6b6b; display: none; }
+  .error-msg.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="ad-banner"><span>ADVERTISEMENT</span></div>
+
+<header>
+  <div class="logo">TikSave<span>.</span>app</div>
+  <nav>
+    <a href="#">Domov</a>
+    <a href="#">Instagram</a>
+    <a href="#">YouTube</a>
+    <a href="#">Blog</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <h1>Stiahni TikTok video<br><em>bez watermarku</em></h1>
+  <p>Rýchlo, zadarmo a bez registrácie. Vlož odkaz z TikToku a stiahni video v HD kvalite.</p>
+
+  <div class="input-wrap">
+    <input type="text" id="urlInput" placeholder="Vlož odkaz na TikTok video..." />
+    <button onclick="handleDownload()">Stiahnuť</button>
+  </div>
+  <div class="error-msg" id="errorMsg">Vlož platný odkaz na TikTok video (https://www.tiktok.com/...)</div>
+
+  <div class="formats">
+    <div class="fmt-badge active" onclick="selectFmt(this, 'mp4')">MP4 (Video)</div>
+    <div class="fmt-badge" onclick="selectFmt(this, 'mp3')">MP3 (Hudba)</div>
+    <div class="fmt-badge" onclick="selectFmt(this, 'hd')">HD Kvalita</div>
+  </div>
+</section>
+
+<div class="ad-box">
+  <strong>REKLAMA — 728×90</strong>
+  <span>Tu sa zobrazí tvoja Google AdSense reklama</span>
+</div>
+
+<div class="result" id="resultBox">
+  <div class="result-card">
+    <div class="thumb">
+      <div class="thumb-icon">
+        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </div>
+    </div>
+    <div class="result-info">
+      <h3 id="videoTitle">TikTok Video</h3>
+      <p id="videoMeta">HD · Bez watermarku · MP4</p>
+      <div class="dl-btns">
+        <button class="dl-btn primary" onclick="fakeDownload('HD bez watermarku')">⬇ Stiahnuť HD</button>
+        <button class="dl-btn secondary" onclick="fakeDownload('SD')">Nižšia kvalita</button>
+        <button class="dl-btn secondary" onclick="fakeDownload('MP3')">MP3 Audio</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="steps">
+  <h2>Ako to funguje?</h2>
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">1</div>
+      <h3>Skopíruj odkaz</h3>
+      <p>Otvor TikTok, vyber video a klepni na "Zdieľať" → "Kopírovať odkaz".</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">2</div>
+      <h3>Vlož ho sem</h3>
+      <p>Vlož odkaz do poľa hore a stlač tlačidlo Stiahnuť.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">3</div>
+      <h3>Vyber formát</h3>
+      <p>Vyber MP4 video, HD alebo len MP3 audio podľa potreby.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">4</div>
+      <h3>Stiahni zadarmo</h3>
+      <p>Klikni na stiahnutie a video máš v mobile alebo PC bez loga.</p>
+    </div>
+  </div>
+</section>
+
+<div class="ad-sidebar-wrap">
+  <section class="faq">
+    <h2>Časté otázky</h2>
+    <details class="faq-item">
+      <summary>Je to zadarmo?</summary>
+      <p>Áno, TikSave je úplne zadarmo. Stránka je financovaná reklamami, takže nemusíš platiť ani sa registrovať.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Funguje to na mobile?</summary>
+      <p>Áno! Stránka funguje na iPhone aj Android. Otvor v prehliadači, vlož odkaz a stiahni.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Prečo bez watermarku?</summary>
+      <p>Sťahujeme video priamo zo serverov TikToku pred tým, než pridajú vodoznak. Výsledok je čisté video.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Aké formáty sú k dispozícii?</summary>
+      <p>MP4 v HD a SD kvalite, a MP3 audio extrakt z videa.</p>
+    </details>
+    <details class="faq-item">
+      <summary>Je to legálne?</summary>
+      <p>Sťahovanie videí pre osobné použitie je väčšinou tolerované, no redistribúcia cudzieho obsahu môže porušovať autorské práva.</p>
+    </details>
+  </section>
+  <div class="ad-side">
+    <strong>REKLAMA</strong>
+    <span>160×600<br>Skyscraper</span>
+  </div>
+</div>
+
+<footer>
+  <p>© 2025 TikSave.app — Nie sme prepojení s TikTok / ByteDance</p>
+  <nav>
+    <a href="#">Podmienky</a>
+    <a href="#">Súkromie</a>
+    <a href="#">Kontakt</a>
+  </nav>
+</footer>
+
+<script>
+let selectedFmt = 'mp4';
+
+function selectFmt(el, fmt) {
+  document.querySelectorAll('.fmt-badge').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  selectedFmt = fmt;
+}
+
+function handleDownload() {
+  const url = document.getElementById('urlInput').value.trim();
+  const err = document.getElementById('errorMsg');
+  const result = document.getElementById('resultBox');
+
+  if (!url || !url.includes('tiktok.com')) {
+    err.classList.add('show');
+    result.classList.remove('show');
+    return;
+  }
+
+  err.classList.remove('show');
+  document.getElementById('videoTitle').textContent = 'TikTok Video #' + Math.floor(Math.random() * 999999);
+  const fmtLabel = selectedFmt === 'mp3' ? 'MP3 Audio' : selectedFmt === 'hd' ? 'HD 1080p' : 'HD 720p';
+  document.getElementById('videoMeta').textContent = fmtLabel + ' · Bez watermarku · Pripravené na stiahnutie';
+  result.classList.add('show');
+  result.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function fakeDownload(label) {
+  alert('Toto je demo ukážka stránky.\n\nV reálnej verzii by tu prebehlo stiahnutie: ' + label + '\n\nNa produkciu potrebuješ backend API (napr. rapidapi.com/tiktok-api).');
+}
+
+document.getElementById('urlInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') handleDownload();
+});
+</script>
+</body>
+</html>
